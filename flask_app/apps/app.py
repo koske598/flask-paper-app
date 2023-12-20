@@ -16,7 +16,7 @@ db = SQLAlchemy()
 csrf = CSRFProtect()
 login_manager = LoginManager()
 login_manager.login_view = "auth.signup"
-login_manager.login_message = ""
+login_manager.login_message = "ログインしました"
 
 def create_app(config_key):
     app = Flask(__name__)
