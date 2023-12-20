@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>論文検索</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+    <!-- ナビゲーションバーを作成する -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand " href="{{ url_for('scrapy.index') }}">論文検索</a>
+            <ul class="navbar-nav">
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <span class="nav-link">{{ current_user.username }}</span>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('auth.logout') }}" class="nav-link">ログアウト</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.signup') }}">新規登録</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">ログイン</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- block contentをsection class="container"で囲む -->
+    <section class="container">
+        <!-- flashエラーを表示する -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li class="flash">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+        <!-- 画像アップロード画面へのリンクを追加する -->
+        <div class="col-md-10 text-right dt-image-register-btn">
+            <a href="{{ url_for('scrapy.upload_word') }}" class="btn btn-primary">論文検索</a>
+        </div>
+        <!-- 画像一覧を表示する -->
+        {% for user_keyword in user_keywords %}
+        <div class="card col-md-7 dt-image-content">
+            <header class="d-flex justify-content-between">
+                <div class="dt-image-username">{{ user_keyword.User.username }}</div>
+                <!-- 物体検知フォームを追加する -->
+                <div class="d-flex flex-row-reverse">
+                    <!-- 削除ボタンのフォームを追加する -->
+                    <div class="p-2">
+                        <form action="{{ url_for('scrapy.delete_object', keyword_id=user_keyword.UserKeyword.id) }}" method="POST">
+                            {{ delete_form.csrf_token }}
+                            {% if current_user.id == user_keyword.User.id %}
+                            {{ delete_form.submit(class="btn btn-danger") }}
+                            {% else %}
+                            {{ delete_form.submit(class="btn btn-danger", disabled="disabled") }}
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </header>
+            <section>
+                {% for url in url_list %}
+                    {% if user_keyword.UserKeyword.keyword in url and user_keyword.UserKeyword.year1 in url and user_keyword.UserKeyword.year2 in url %}
+                    <img src="{{ url }}" alt="アップロード画像" />
+                    {% endif %}
+                {% endfor %}
+            </section>
+            <footer>
+                {{ user_keyword.UserKeyword.keyword }}
+            </footer>
+        </div>
+        {% endfor %}
+    </section>
+</body>
+</html>

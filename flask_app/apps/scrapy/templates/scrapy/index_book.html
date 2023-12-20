@@ -1,0 +1,46 @@
+{% extends "scrapy/base.html" %}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li class="flash">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+<!-- 画像アップロード画面へのリンクを追加する -->
+<div class="col-md-10 text-right dt-image-register-btn">
+    <a href="{{ url_for('scrapy.upload_word') }}" class="btn btn-primary">画像新規登録</a>
+</div>
+<!-- 画像一覧を表示する -->
+{% for user_keyword in user_keywords %}
+<div class="card col-md-7 dt-image-content">
+    <header class="d-flex justify-content-between">
+        <div class="dt-image-username">{{ user_keyword.UserKeyword.keyword }}</div>
+        <!-- 物体検知フォームを追加する -->
+        <div class="d-flex flex-row-reverse">
+            <!-- 削除ボタンのフォームを追加する -->
+            <div class="p-2">
+                <form action="{{ url_for('scrapy.delete_object', keyword_id=user_keyword.UserKeyword.id) }}" method="POST">
+                    {{ delete_form.csrf_token }}
+                    {% if current_user.id == user_keyword.User.id %}
+                    {{ delete_form.submit(class="btn btn-danger") }}
+                    {% else %}
+                    {{ delete_form.submit(class="btn btn-danger", disabled="disabled") }}
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </header>
+    <section>
+        {% for url in url_list %}
+        <div>
+        <img src= "{{ url }}">
+        </div>
+        {% endfor %}
+    </section>
+</div>
+{% endfor %}
+{% endblock %}

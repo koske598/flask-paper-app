@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="google_scholarから取得した論文の年度や引用件数での並べ替えや、引用件数の平均値・中央値を視覚的に把握できるようにしました">
+        <meta name="viewport" content="width=device-width">
+        <title>論文検索</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+        
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand " href="{{ url_for('scrapy.index') }}">論文検索</a>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link">{{ current_user.username }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link">ログアウト</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}" >ログイン</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.signup') }}">新規登録</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <section class="container">
+            <ul>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in get_flashed_messages() %}
+                        <li class="flash">{{ message }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </ul>
+            <div>
+                <h4>論文新規検索</h4>
+                <p>検索キーワードは英語での入力お願いします</p>
+                <form
+                    action="{{ url_for('scrapy.upload_word')}}" 
+                    method="post"
+                >
+                    {{ form.csrf_token }}
+                    <div>
+                        <label>
+                            <span>{{ form.keyword(class="form-control-file", placeholder="検索キーワード") }}</span>
+                        </label>
+                        <br>
+                        <br>
+                        <label>
+                            <span>{{ form.year1(class="form-control-file", placeholder="検索開始年") }}</span>
+                        </label>
+                        <span style="margin: 0 5px;">～</span> <!-- ダッシュを挿入 -->
+                        <label>
+                            <span>{{ form.year2(class="form-control-file", placeholder="検索終了年") }}</span>
+                        </label>
+                    </div>
+                    <!--{% for error in form.keyword.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}-->
+                    <div>
+                        <label>{{ form.submit(class="btn btn-primary") }}</label>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </body>
+</html>

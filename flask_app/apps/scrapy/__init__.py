@@ -1,0 +1,1 @@
+import flask_app.apps.scrapy.models
