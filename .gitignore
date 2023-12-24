@@ -1,3 +1,4 @@
 .env
 instance
 local.sqlite
+__pycache__
